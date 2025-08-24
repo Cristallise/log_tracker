@@ -1,0 +1,31 @@
+# Flow Logger Roadmap
+
+## Near-Term (v1 → v2)
+- **Idle Helper**: detect long idle gaps, adjust stop time.
+- **SQLite backend**: switch from CSV to database.
+- **Writers abstraction**: CSV and SQLite interchangeable via one interface.
+
+## Medium-Term
+- **Tag normalization**: move tags into `entry_tags` table for flexible queries.
+- **Context table**: deduplicate app/window/url into `contexts` table linked by `context_id`.
+- **Sessions table**: track session-level metadata (`started_at`, `stopped_at`, title).
+
+## Long-Term
+- **Browser bridge**: Chrome extension to pre-fill popup with URL/title.
+- **Obsidian integration**: daily import of logs into notes.
+- **Visualization dashboard**: timeline and graph views of flows (Tangent-style).
+- **Coda/Notion compatibility**: export for multi-view dashboards.
+
+---
+
+## Schema Migration Plan
+
+- **Schema v1**: single CSV file with flat fields.
+- **Schema v2**: SQLite with tables:  
+  - `entries(log_id PK, session_id, timestamp, event, action_note, context_id, schema_version, …)`
+  - `entry_tags(log_id FK, tag)`
+  - `contexts(context_id PK, app_name, window_title, url, domain)`
+  - `sessions(session_id PK, started_at, stopped_at, title)`
+- **Migration path**: CSV importer → populate DB, split tags into `entry_tags`, dedupe contexts.
+
+
